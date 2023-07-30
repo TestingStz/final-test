@@ -20,15 +20,15 @@ jobs:
           ORIGIN_REPO_URL=$(jq -r '.issue.html_url' "${{ github.event_path }}")
 
           # Check if the issue contains the template header
-          if [[ "$BODY" == *"## Bug Report Template"* ]]; then
+          if [[ "$BODY" == *"Bug Report Template"* ]]; then
             # Extract information from the template
-            BUG_DESCRIPTION=$(echo "$BODY" | sed -n '/### 1. **Bug\/Vulnerability Description**/,/### 2. **Hardware and Software Specifications**/p' | sed '1d;$d')
-            HARDWARE_SOFTWARE_SPECS=$(echo "$BODY" | sed -n '/### 2. **Hardware and Software Specifications**/,/### 3. **Steps to Reproduce**/p' | sed '1d;$d')
-            STEPS_TO_REPRODUCE=$(echo "$BODY" | sed -n '/### 3. **Steps to Reproduce**/,/### 4. **Impact Analysis**/p' | sed '1d;$d')
-            IMPACT_ANALYSIS=$(echo "$BODY" | sed -n '/### 4. **Impact Analysis**/,/### 5. **Code Fix Submission**/p' | sed '1d;$d')
-            CODE_FIX_SUBMISSION=$(echo "$BODY" | sed -n '/### 5. **Code Fix Submission**/,/### 6. **Choose the Right Label**/p' | sed '1d;$d')
-            LABELS=$(echo "$BODY" | sed -n '/### 6. **Choose the Right Label**/,/### 7. **Additional Context**/p' | sed '1d;$d')
-            ADDITIONAL_CONTEXT=$(echo "$BODY" | sed -n '/### 7. **Additional Context**/,$p' | sed '1d')
+            BUG_DESCRIPTION=$(echo "$BODY" | sed -n '/1. Bug\/Vulnerability Description/,/2. Hardware and Software Specifications/p' | sed '1d;$d')
+            HARDWARE_SOFTWARE_SPECS=$(echo "$BODY" | sed -n '/2. Hardware and Software Specifications/,/3. Steps to Reproduce/p' | sed '1d;$d')
+            STEPS_TO_REPRODUCE=$(echo "$BODY" | sed -n '/3. Steps to Reproduce/,/4. Impact Analysis/p' | sed '1d;$d')
+            IMPACT_ANALYSIS=$(echo "$BODY" | sed -n '/4. Impact Analysis/,/5. Code Fix Submission/p' | sed '1d;$d')
+            CODE_FIX_SUBMISSION=$(echo "$BODY" | sed -n '/5. Code Fix Submission/,/6. Choose the Right Label/p' | sed '1d;$d')
+            LABELS=$(echo "$BODY" | sed -n '/6. Choose the Right Label/,/7. Additional Context/p' | sed '1d;$d')
+            ADDITIONAL_CONTEXT=$(echo "$BODY" | sed -n '/7. Additional Context/,$p' | sed '1d')
 
             # Format the new issue body with both title and content from the template
             BODY_WITH_LINK="**Bug/Vulnerability Description:**\n$BUG_DESCRIPTION\n\n**Hardware and Software Specifications:**\n$HARDWARE_SOFTWARE_SPECS\n\n**Steps to Reproduce:**\n$STEPS_TO_REPRODUCE\n\n**Impact Analysis:**\n$IMPACT_ANALYSIS\n\n**Code Fix Submission:**\n$CODE_FIX_SUBMISSION\n\n**Choose the Right Label:**\n$LABELS\n\n**Additional Context:**\n$ADDITIONAL_CONTEXT\n\nComments are not being updated\nOriginal Issue can be found [here]($ORIGIN_REPO_URL)"

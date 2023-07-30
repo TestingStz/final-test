@@ -16,15 +16,10 @@ jobs:
           BODY="${{ github.event.issue.body }}"
           ORIGIN_REPO_URL="${{ github.event.issue.html_url }}"
 
-          # Create the new issue in the "bug_bounty_v1" repository with the title
-          ISSUE_RESPONSE=$(curl -X POST -H "Authorization: token $MAIN_REPO_TOKEN" \
-          -d "{\"title\":\"[External Issue] $TITLE\"}" \
-          "https://api.github.com/repos/$MAIN_REPO/issues")
+          # Append the link to the original issue to the body
+          BODY_WITH_LINK="$BODY\n\nComments are not being updated\nOriginal Issue can be found [here]($ORIGIN_REPO_URL)"
 
-          # Extract the newly created issue number from the response
-          ISSUE_NUMBER=$(echo "$ISSUE_RESPONSE" | jq -r '.number')
-
-          # Add a comment with the link to the original issue
+          # Create the new issue in the "bug_bounty_v1" repository with the title and the link in the body
           curl -X POST -H "Authorization: token $MAIN_REPO_TOKEN" \
-          -d "{\"body\":\"Comments are not being updated\nOriginal Issue can be found [here]($ORIGIN_REPO_URL)\"}" \
-          "https://api.github.com/repos/$MAIN_REPO/issues/$ISSUE_NUMBER/comments"
+          -d "{\"title\":\"[External Issue] $TITLE\",\"body\":\"$BODY_WITH_LINK\"}" \
+          "https://api.github.com/repos/$MAIN_REPO/issues"

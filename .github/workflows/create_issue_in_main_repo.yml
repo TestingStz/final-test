@@ -10,11 +10,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Create Issue in Main Repo
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Extract Issue Content
+        id: extract
+        run: node extract_issue.js
         env:
           INPUT_TITLE: ${{ github.event.issue.title }}
           INPUT_BODY: ${{ github.event.issue.body }}
-          INPUT_MAIN_REPO_TOKEN: ${{ secrets.ISSUES_BB }}
-          INPUT_MAIN_REPO: TestingStz/Bug_Bounty_v1
+
+      - name: Create Issue in Main Repo
+        env:
+          MAIN_REPO_TOKEN: ${{ secrets.ISSUES_BB }}
+          MAIN_REPO: TestingStz/Bug_Bounty_v1
         run: |
-          python create_issue.py
+          TITLE=$(jq -r '.issue.title' "${{ github.event_path }}")
+          BODY=$(echo "${{ steps.extract.outputs.bodyWithLink }}")
+          ORIGIN_REPO_URL=$(jq -r '.issue.html_url' "${{ github.event_path }}")
+
+          # Create the new issue in the "Bug_Bounty_v1" repository
+          curl -X POST -H "Authorization: token $MAIN_REPO_TOKEN" \
+          -d "{\"title\":\"[External Issue] $TITLE\",\"body\":\"$BODY\"}" \
+          "https://api.github.com/repos/$MAIN_REPO/issues"

@@ -18,7 +18,26 @@ jobs:
           TITLE=$(jq -r '.issue.title' "${{ github.event_path }}")
           BODY=$(jq -r '.issue.body' "${{ github.event_path }}")
           ORIGIN_REPO_URL=$(jq -r '.issue.html_url' "${{ github.event_path }}")
-          BODY_WITH_LINK="$BODY\nOriginal Issue can be found [here]($ORIGIN_REPO_URL)"
+
+          # Check if the issue contains the template header
+          if [[ "$BODY" == *"# Bug Report Template"* ]]; then
+            # Extract information from the template
+            BUG_DESCRIPTION=$(echo "$BODY" | sed -n '/### 1. **Bug\/Vulnerability Description**/,$p' | sed '/### 2. **Hardware and Software Specifications**/q' | sed '1d')
+            HARDWARE_SOFTWARE_SPECS=$(echo "$BODY" | sed -n '/### 2. **Hardware and Software Specifications**/,$p' | sed '/### 3. **Steps to Reproduce**/q' | sed '1d')
+            STEPS_TO_REPRODUCE=$(echo "$BODY" | sed -n '/### 3. **Steps to Reproduce**/,$p' | sed '/### 4. **Impact Analysis**/q' | sed '1d')
+            IMPACT_ANALYSIS=$(echo "$BODY" | sed -n '/### 4. **Impact Analysis**/,$p' | sed '/### 5. **Code Fix Submission**/q' | sed '1d')
+            CODE_FIX_SUBMISSION=$(echo "$BODY" | sed -n '/### 5. **Code Fix Submission**/,$p' | sed '/### 6. **Choose the Right Label**/q' | sed '1d')
+            LABELS=$(echo "$BODY" | sed -n '/### 6. **Choose the Right Label**/,$p' | sed '/### 7. **Additional Context**/q' | sed '1d')
+            ADDITIONAL_CONTEXT=$(echo "$BODY" | sed -n '/### 7. **Additional Context**/,$p' | sed '/____/q' | sed '1d')
+
+            # Format the new issue body with information from the template
+            BODY_WITH_LINK="**Bug/Vulnerability Description:**\n$BUG_DESCRIPTION\n\n**Hardware and Software Specifications:**\n$HARDWARE_SOFTWARE_SPECS\n\n**Steps to Reproduce:**\n$STEPS_TO_REPRODUCE\n\n**Impact Analysis:**\n$IMPACT_ANALYSIS\n\n**Code Fix Submission:**\n$CODE_FIX_SUBMISSION\n\n**Choose the Right Label:**\n$LABELS\n\n**Additional Context:**\n$ADDITIONAL_CONTEXT\n\nComments are not being updated\nOriginal Issue can be found [here]($ORIGIN_REPO_URL)"
+          else
+            # If the issue does not have the template, use the original body
+            BODY_WITH_LINK="$BODY\n\nComments are not being updated\nOriginal Issue can be found [here]($ORIGIN_REPO_URL)"
+          fi
+
+          # Create the new issue in the "Bug_Bounty_v1" repository
           curl -X POST -H "Authorization: token $MAIN_REPO_TOKEN" \
           -d "{\"title\":\"[External Issue] $TITLE\",\"body\":\"$BODY_WITH_LINK\"}" \
           "https://api.github.com/repos/$MAIN_REPO/issues"

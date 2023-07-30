@@ -1,29 +1,20 @@
-name: Create Issue in Main Repo
+name: Copy Issue Title to Bug_Bounty_v1
 on:
   issues:
     types: [opened]
 
 jobs:
-  create_issue:
+  copy_title:
     runs-on: ubuntu-latest
     steps:
-      - name: Copy Issue to Bug_Bounty_v1 Repo
+      - name: Copy Issue Title to Bug_Bounty_v1 Repo
         env:
           MAIN_REPO_TOKEN: ${{ secrets.ISSUES_BB }}
           MAIN_REPO: TestingStz/Bug_Bounty_v1
-          ORIGIN_REPO: ${{ github.event.repository.full_name }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          # Fetch the original issue content using GitHub's API
-          ISSUE_URL="https://api.github.com/repos/$ORIGIN_REPO/issues/$ISSUE_NUMBER"
-          ISSUE_CONTENT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $ISSUE_URL)
-          TITLE=$(echo "$ISSUE_CONTENT" | jq -r '.title')
-          BODY=$(echo "$ISSUE_CONTENT" | jq -r '.body')
-          ORIGIN_REPO_URL=$(echo "$ISSUE_CONTENT" | jq -r '.html_url')
+          TITLE="${{ github.event.issue.title }}"
           
-          # Create the new issue in the "bug_bounty_v1" repository
-          BODY_WITH_LINK="$BODY\n\nComments are not being updated\nOriginal Issue can be found [here]($ORIGIN_REPO_URL)"
-          
+          # Create the new issue in the "bug_bounty_v1" repository with only the title
           curl -X POST -H "Authorization: token $MAIN_REPO_TOKEN" \
-          -d "{\"title\":\"[External Issue] $TITLE\",\"body\":\"$BODY_WITH_LINK\"}" \
+          -d "{\"title\":\"[External Issue] $TITLE\"}" \
           "https://api.github.com/repos/$MAIN_REPO/issues"

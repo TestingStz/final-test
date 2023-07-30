@@ -1,38 +1,47 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a report for the Bug Bounty 1.0
 title: ''
 labels: ''
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## Bug Report Template
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+Please use this template to report bugs or vulnerabilities. Please fill out all the sections below:
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+### 1. **Bug/Vulnerability Description** 
+Clearly state and describe the identified bug or vulnerability.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+### 2. **Hardware and Software Specifications** 
+- OS Name & version
+- CPU Name & Brand
+- Go version
+- Rust version
+- SGX version (optional)
+- \[ \] Docker environment
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+### 3. **Steps to Reproduce** 
+Provide clear and concise instructions to reproduce the reported bug or vulnerability.
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+### 4. **Impact Analysis** 
+Analyze the potential consequences of the bug or vulnerability on users, developers, and the organization.
 
-**Additional context**
-Add any other context about the problem here.
+### 5. **Code Fix Submission** 
+(Optional) If you have a suggestion for fixing the bug or vulnerability, provide a code fix or a proposed solution.
+
+### 6. **Choose the Right Label** 
+Choose the suitable label/s that represents the nature of the issue being resolved, indicating its specific category and severity of the vulnerability
+
+### 7. **Additional Context** 
+(Optional)Share any relevant context, screenshots, logs, or error messages that can facilitate problem-solving and comprehensive understanding.
+
+____
+
+Thank you for contributing to the improvement of our project!👨‍💻👩‍💻
+____
+
+## Swisstronik internal use only
+- [ ] Not duplicate issue
+- [ ] Appropriate labels applied

@@ -1,20 +1,30 @@
-name: Copy Issue Title to Bug_Bounty_v1
+name: Copy Issue to Bug_Bounty_v1
 on:
   issues:
     types: [opened]
 
 jobs:
-  copy_title:
+  copy_issue:
     runs-on: ubuntu-latest
     steps:
-      - name: Copy Issue Title to Bug_Bounty_v1 Repo
+      - name: Copy Issue to Bug_Bounty_v1 Repo
         env:
           MAIN_REPO_TOKEN: ${{ secrets.ISSUES_BB }}
           MAIN_REPO: TestingStz/Bug_Bounty_v1
         run: |
           TITLE="${{ github.event.issue.title }}"
-          
-          # Create the new issue in the "bug_bounty_v1" repository with only the title
-          curl -X POST -H "Authorization: token $MAIN_REPO_TOKEN" \
+          BODY="${{ github.event.issue.body }}"
+          ORIGIN_REPO_URL="${{ github.event.issue.html_url }}"
+
+          # Create the new issue in the "bug_bounty_v1" repository with the title
+          ISSUE_RESPONSE=$(curl -X POST -H "Authorization: token $MAIN_REPO_TOKEN" \
           -d "{\"title\":\"[External Issue] $TITLE\"}" \
-          "https://api.github.com/repos/$MAIN_REPO/issues"
+          "https://api.github.com/repos/$MAIN_REPO/issues")
+
+          # Extract the newly created issue number from the response
+          ISSUE_NUMBER=$(echo "$ISSUE_RESPONSE" | jq -r '.number')
+
+          # Add a comment with the link to the original issue
+          curl -X POST -H "Authorization: token $MAIN_REPO_TOKEN" \
+          -d "{\"body\":\"Comments are not being updated\nOriginal Issue can be found [here]($ORIGIN_REPO_URL)\"}" \
+          "https://api.github.com/repos/$MAIN_REPO/issues/$ISSUE_NUMBER/comments"

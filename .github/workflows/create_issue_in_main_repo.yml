@@ -16,11 +16,8 @@ jobs:
           node-version: '14'
 
       - name: Extract Issue Content
+        run: node extract_issue.js "${{ github.event.issue.title }}" "${{ github.event.issue.body }}"
         id: extract
-        run: node extract_issue.js
-        env:
-          INPUT_TITLE: ${{ github.event.issue.title }}
-          INPUT_BODY: ${{ github.event.issue.body }}
 
       - name: Create Issue in Main Repo
         env:
@@ -28,7 +25,7 @@ jobs:
           MAIN_REPO: TestingStz/Bug_Bounty_v1
         run: |
           TITLE=$(jq -r '.issue.title' "${{ github.event_path }}")
-          BODY=$(echo "${{ steps.extract.outputs.bodyWithLink }}")
+          BODY=$(echo "${{ steps.extract.outputs.stdout }}")
           ORIGIN_REPO_URL=$(jq -r '.issue.html_url' "${{ github.event_path }}")
 
           # Create the new issue in the "Bug_Bounty_v1" repository

@@ -1,0 +1,24 @@
+name: Create Issue in Main Repo
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create Issue in Main Repo
+        env:
+          MAIN_REPO_TOKEN: ${{ secrets.ISSUES_BB }}
+          MAIN_REPO: TestingStz/Bug_Bounty_v1
+        run: |
+          TITLE=$(jq -r '.issue.title' "${{ github.event_path }}")
+          BODY=$(jq -r '.issue.body' "${{ github.event_path }}")
+          ORIGIN_REPO_URL=$(jq -r '.issue.html_url' "${{ github.event_path }}")
+          BODY_WITH_LINK="$BODY\nOriginal Issue can be found [here]($ORIGIN_REPO_URL)"
+          curl -X POST -H "Authorization: token $MAIN_REPO_TOKEN" \
+          -d "{\"title\":\"[External Issue] $TITLE\",\"body\":\"$BODY_WITH_LINK\"}" \
+          "https://api.github.com/repos/$MAIN_REPO/issues"

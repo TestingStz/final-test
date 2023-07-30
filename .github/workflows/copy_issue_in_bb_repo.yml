@@ -1,4 +1,4 @@
-name: Copy Issue to Bug_Bounty_v1
+name: Copy issue to Bug_Bounty_1.0
 on:
   issues:
     types: [opened]

@@ -13,13 +13,10 @@ jobs:
           MAIN_REPO: TestingStz/Bug_Bounty_v1
         run: |
           TITLE="${{ github.event.issue.title }}"
-          BODY="${{ github.event.issue.body }}"
           ORIGIN_REPO_URL="${{ github.event.issue.html_url }}"
 
-          # Append the link to the original issue to the body
-          BODY_WITH_LINK="$BODY\n\nComments are not being updated\nOriginal Issue can be found [here]($ORIGIN_REPO_URL)"
-
           # Create the new issue in the "bug_bounty_v1" repository with the title and the link in the body
+          ISSUE_BODY="Original Issue can be found [here]($ORIGIN_REPO_URL)"
           curl -X POST -H "Authorization: token $MAIN_REPO_TOKEN" \
-          -d "{\"title\":\"[External Issue] $TITLE\",\"body\":\"$BODY_WITH_LINK\"}" \
+          -d "{\"title\":\"[External Issue] $TITLE\",\"body\":\"$ISSUE_BODY\"}" \
           "https://api.github.com/repos/$MAIN_REPO/issues"
